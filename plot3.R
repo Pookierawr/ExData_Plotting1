@@ -1,0 +1,16 @@
+#Reads in and formats data
+thing <- read.table("household_power_consumption.txt", header = FALSE, col.names = c("date", "time", "activepower","reactivepower","voltage","intensity","submeter1","submeter2","submeter3"), sep = ";", nrows = 2880, skip = 66637)
+thing$date <- strptime(thing$date, "%d/%m/%Y")
+thing$time <- strptime(thing$time, "%T")
+thing$time <- sub(".* ","",thing$time)
+datetime <- paste(thing$date, thing$time)
+withtime <- cbind(thing,datetime)
+#Creates png and plots
+png(filename = "plot3.png", width = 480, height = 480)
+plot(withtime$datetime, withtime$submeter1, xaxt = "n", ylab = "Energy sub metering", type = "n")
+lines(withtime$datetime, withtime$submeter1)
+lines(withtime$datetime, withtime$submeter2, col = "red")
+lines(withtime$datetime, withtime$submeter3, col = "blue")
+axis(1, at = c(1,1441,2880), labels = c("Thu", "Fri", "Sat"))
+legend("topright", lty=1, col = c("black", "red", "blue"), legend = c("Sub_metering_1","Sub_metering_2","Sub_metering_3"))
+dev.off()
